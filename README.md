@@ -2,8 +2,8 @@
 
 A production-oriented full-stack web application for uploading PDF documents, signing them electronically, managing document workflows, and verifying document authenticity.
 
-**Live URL:** _Add after deployment_  
-**API URL:** _Add after deployment_  
+**Live URL:** https://docsign-hkov.vercel.app  
+**API URL:** https://docsign-hkov.vercel.app/api  
 **Demo User:** viveklimbachiya999@gmail.com / (your password)
 **Demo Admin:** admin@docsign.com / Admin@123
 

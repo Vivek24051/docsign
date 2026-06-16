@@ -4,7 +4,7 @@ A production-oriented full-stack web application for uploading PDF documents, si
 
 **Live URL:** https://docsign-hkov.vercel.app  
 **API URL:** https://docsign-hkov.vercel.app/api  
-**Demo User:** viveklimbachiya999@gmail.com / (your password)
+**Demo User:** viveklimbachiya999@gmail.com / 321Panda
 **Demo Admin:** admin@docsign.com / Admin@123
 
 ---

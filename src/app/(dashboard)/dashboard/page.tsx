@@ -13,6 +13,8 @@ interface Document {
   verificationCode: string;
   createdAt: string;
   fileSize: number | null;
+  originalUrl: string;
+  signedUrl?: string | null;
 }
 
 export default function DashboardPage() {

@@ -3,7 +3,7 @@ import { getAuthUser } from "@/lib/auth";
 import { apiSuccess, apiError } from "@/lib/response";
 
 export async function POST(request: NextRequest) {
-  const user = await getAuthUser(request);
+  const user = await getAuthUser();
   if (!user) return apiError("Unauthorized", 401);
 
   const { text } = await request.json();

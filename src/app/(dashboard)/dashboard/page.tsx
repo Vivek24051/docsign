@@ -20,7 +20,7 @@ interface Document {
 export default function DashboardPage() {
   const { user } = useAuth();
   const [documents, setDocuments] = useState<Document[]>([]);
-  const [total, setTotal] = useState(0);
+  const [allDocuments, setAllDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [showUpload, setShowUpload] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
@@ -30,12 +30,14 @@ export default function DashboardPage() {
     setLoading(true);
     try {
       const params = statusFilter ? `?status=${statusFilter}` : "";
-      const res = await fetch(`/api/documents${params}`);
-      const data = await res.json();
-      if (res.ok) {
-        setDocuments(data.data.documents);
-        setTotal(data.data.total);
-      }
+      const [filteredRes, allRes] = await Promise.all([
+        fetch(`/api/documents${params}`),
+        fetch("/api/documents"),
+      ]);
+      const filteredData = await filteredRes.json();
+      const allData = await allRes.json();
+      if (filteredRes.ok) setDocuments(filteredData.data.documents);
+      if (allRes.ok) setAllDocuments(allData.data.documents);
     } finally {
       setLoading(false);
     }
@@ -82,9 +84,9 @@ export default function DashboardPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {[
-          { label: "Total", value: total, color: "text-gray-900" },
-          { label: "Pending", value: documents.filter(d => d.status !== "COMPLETED").length, color: "text-yellow-600" },
-          { label: "Completed", value: documents.filter(d => d.status === "COMPLETED").length, color: "text-green-600" },
+          { label: "Total", value: allDocuments.length, color: "text-gray-900" },
+          { label: "Pending", value: allDocuments.filter(d => d.status !== "COMPLETED").length, color: "text-yellow-600" },
+          { label: "Completed", value: allDocuments.filter(d => d.status === "COMPLETED").length, color: "text-green-600" },
         ].map(stat => (
           <div key={stat.label} className="bg-white rounded-xl border border-gray-200 p-4">
             <p className="text-xs text-gray-500">{stat.label}</p>

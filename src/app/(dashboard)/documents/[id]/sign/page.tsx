@@ -112,14 +112,20 @@ export default function SignPage() {
     return () => { cancelled = true; };
   }, [document?.originalUrl]);
 
-  // Drag-to-move signature boxes
+  // Drag-to-move signature boxes (mouse + touch)
   useEffect(() => {
     if (!dragging) return;
-    const handleMove = (e: MouseEvent) => {
+    const getCoords = (e: MouseEvent | TouchEvent) => {
+      if ("touches" in e) return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
+      return { clientX: e.clientX, clientY: e.clientY };
+    };
+    const handleMove = (e: MouseEvent | TouchEvent) => {
       if (!pdfContainerRef.current) return;
+      if ("touches" in e) e.preventDefault();
+      const { clientX, clientY } = getCoords(e);
       const rect = pdfContainerRef.current.getBoundingClientRect();
-      const x = Math.max(0, e.clientX - rect.left - dragging.offsetX);
-      const y = Math.max(0, e.clientY - rect.top - dragging.offsetY);
+      const x = Math.max(0, clientX - rect.left - dragging.offsetX);
+      const y = Math.max(0, clientY - rect.top - dragging.offsetY);
       setPlacedSigs((prev) =>
         prev.map((s) => (s.id === dragging.id ? { ...s, x, y } : s))
       );
@@ -127,9 +133,13 @@ export default function SignPage() {
     const handleUp = () => setDragging(null);
     window.addEventListener("mousemove", handleMove);
     window.addEventListener("mouseup", handleUp);
+    window.addEventListener("touchmove", handleMove, { passive: false });
+    window.addEventListener("touchend", handleUp);
     return () => {
       window.removeEventListener("mousemove", handleMove);
       window.removeEventListener("mouseup", handleUp);
+      window.removeEventListener("touchmove", handleMove);
+      window.removeEventListener("touchend", handleUp);
     };
   }, [dragging]);
 
@@ -318,6 +328,11 @@ export default function SignPage() {
                     e.stopPropagation();
                     const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
                     setDragging({ id: sig.id, offsetX: e.clientX - rect.left, offsetY: e.clientY - rect.top });
+                  }}
+                  onTouchStart={(e) => {
+                    e.stopPropagation();
+                    const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
+                    setDragging({ id: sig.id, offsetX: e.touches[0].clientX - rect.left, offsetY: e.touches[0].clientY - rect.top });
                   }}
                   onClick={(e) => e.stopPropagation()}
                 >
